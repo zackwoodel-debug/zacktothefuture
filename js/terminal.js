@@ -16,6 +16,7 @@ const Term = {
   busy: false,
   booted: false,
   skipBoot: false,
+  skipType: false,
   lastActivity: Date.now(),
   reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
 
@@ -44,14 +45,30 @@ const Term = {
     return div;
   },
 
-  /* print an array of {html, cls} (or strings) line by line */
+  /* Print an array of {html, cls} (or strings) line by line.
+     Paced by wall clock, not per-line sleeps, so browser timer
+     throttling can't slow it below real time; any keypress
+     fast-forwards (skipType). */
   async printLines(lines, delay) {
     const d = this.reducedMotion ? 0 : (delay === undefined ? 12 : delay);
     this.busy = true;
-    for (const l of lines) {
+    this.skipType = false;
+    const render = (l) => {
       if (typeof l === "string") this.line(this.esc(l));
       else this.line(l.html !== undefined ? l.html : this.esc(l.text), l.cls);
-      if (d) await this.sleep(d);
+    };
+    if (d === 0) {
+      lines.forEach(render);
+    } else {
+      const t0 = performance.now();
+      let i = 0;
+      while (i < lines.length) {
+        const due = this.skipType
+          ? lines.length
+          : Math.min(lines.length, Math.floor((performance.now() - t0) / d) + 1);
+        while (i < due) render(lines[i++]);
+        if (i < lines.length) await this.sleep(d);
+      }
     }
     this.busy = false;
   },
@@ -416,7 +433,12 @@ const Term = {
   },
 
   async submit(raw) {
-    if (this.busy) return;
+    if (this.busy) {
+      // fast-forward the current animation, then submit normally
+      this.skipType = true;
+      await this.sleep(60);
+      if (this.busy) return;
+    }
     const text = raw.trim();
     this.echo(raw);
     this.input.value = "";
@@ -581,10 +603,22 @@ const Term = {
     document.addEventListener("pointerdown", skip, { once: true });
 
     if (!this.reducedMotion && !returning) {
-      for (const b of this.bootLines) {
-        if (this.skipBoot) break;
-        this.line(this.esc(b.text), b.cls);
-        await this.sleep(b.d);
+      // wall-clock schedule: throttled timers catch up instead of stalling
+      let acc = 0;
+      const due = this.bootLines.map(b => (acc += b.d, acc - b.d));
+      const t0 = performance.now();
+      let i = 0;
+      while (i < this.bootLines.length) {
+        if (this.skipBoot) {
+          while (i < this.bootLines.length) { const b = this.bootLines[i++]; this.line(this.esc(b.text), b.cls); }
+          break;
+        }
+        const elapsed = performance.now() - t0;
+        while (i < this.bootLines.length && due[i] <= elapsed) {
+          const b = this.bootLines[i++];
+          this.line(this.esc(b.text), b.cls);
+        }
+        if (i < this.bootLines.length) await this.sleep(60);
       }
     }
     document.removeEventListener("keydown", skip);
@@ -597,13 +631,14 @@ const Term = {
     this.line(`<span class="dim">${this.esc(DATA.school)} · ${this.esc(DATA.location)}</span>`);
     this.line(`<span class="dim">${"─".repeat(52)}</span>`);
 
-    await Bear.greet(returning);
-
-    // reveal input + chips
+    // input is usable immediately — Volt talks while you type
     this.inputRow.classList.remove("hidden");
     document.getElementById("chips").classList.remove("hidden");
     this.booted = true;
     this.input.focus();
+    this.scrollToBottom();
+
+    await Bear.greet(returning);
     this.scrollToBottom();
   },
 
@@ -644,6 +679,11 @@ const Term = {
 
     Game.load();
     this.buildChips();
+
+    // any keypress fast-forwards whatever is currently animating
+    document.addEventListener("keydown", () => {
+      if (this.busy) this.skipType = true;
+    });
 
     // keyboard
     this.input.addEventListener("keydown", (e) => {

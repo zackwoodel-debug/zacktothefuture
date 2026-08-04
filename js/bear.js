@@ -44,13 +44,20 @@ const Bear = {
       return;
     }
 
-    // typewriter: type plain text, then swap in the linked html
+    // Typewriter paced by wall clock: reveal count derives from
+    // elapsed time, so throttled timers just catch up in bigger
+    // steps instead of stretching the animation. Keypress skips.
     const plain = text.replace(/\[\[(.+?)\]\]/g, "$1").replace(/\{name\}/g, DATA.bear.name);
+    const CHAR_MS = 12;
     Term.busy = true;
-    for (let i = 1; i <= plain.length; i++) {
-      bubble.textContent = plain.slice(0, i);
-      if (i % 3 === 0) Term.scrollToBottom();
-      await Term.sleep(12);
+    Term.skipType = false;
+    const t0 = performance.now();
+    let shown = 0;
+    while (shown < plain.length && !Term.skipType) {
+      shown = Math.min(plain.length, Math.max(shown + 1, Math.floor((performance.now() - t0) / CHAR_MS)));
+      bubble.textContent = plain.slice(0, shown);
+      Term.scrollToBottom();
+      await Term.sleep(CHAR_MS);
     }
     bubble.innerHTML = html;
     Term.busy = false;

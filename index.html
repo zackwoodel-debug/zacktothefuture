@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zack Woodel — Electrical Engineering & Research</title>
+  <meta name="description" content="Zack Woodel — Electrical Engineering student & researcher at Texas Tech University. Quantum materials, semiconductors, power systems & ML. Explore the interactive terminal." />
+  <meta property="og:title" content="Zack Woodel — Interactive Terminal Portfolio" />
+  <meta property="og:description" content="Type commands, earn XP, and meet Volt the bear. Quantum materials & semiconductor research at Texas Tech." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230c1219'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='Menlo,monospace' font-size='26' font-weight='bold' fill='%233fd9a4'%3EZW%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="crt" aria-hidden="true"></div>
+
+  <main class="terminal" id="terminal">
+    <header class="titlebar">
+      <span class="dot dot-red" aria-hidden="true"></span>
+      <span class="dot dot-yellow" aria-hidden="true"></span>
+      <span class="dot dot-green" aria-hidden="true"></span>
+      <span class="title">guest@zackwoodel — ~/powerfolio</span>
+      <span class="xp-badge" id="xpBadge" title="Your explorer level">LV·Visitor 0 XP</span>
+    </header>
+
+    <section class="screen" id="screen">
+      <div id="output"></div>
+      <div class="line input-row hidden" id="inputRow">
+        <span class="prompt" id="promptLabel">guest@zackwoodel:~$</span>
+        <input id="cmdline" type="text" autocomplete="off" autocapitalize="none"
+               autocorrect="off" spellcheck="false" aria-label="terminal command input" />
+      </div>
+    </section>
+
+    <footer class="chips hidden" id="chips" aria-label="quick commands"></footer>
+  </main>
+
+  <div id="toasts" aria-live="polite"></div>
+  <canvas id="matrixCanvas" class="hidden" aria-hidden="true"></canvas>
+
+  <script src="js/data.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/bear.js"></script>
+  <script src="js/terminal.js"></script>
+</body>
+</html>

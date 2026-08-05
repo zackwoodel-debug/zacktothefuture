@@ -105,7 +105,7 @@ const DATA = {
   /* Newest first. Add a line here whenever something happens —
      this is how people keep up with you. */
   news: [
-    { date: "2026-08", text: "Launched ZackOS v1.0 — this very website. Explore the terminal, earn XP." },
+    { date: "2026-08", text: "Launched Zack to the Future v1.0 — this very website. Explore the terminal, earn XP." },
     { date: "2026-06", text: "Started as a Research Intern at Oak Ridge National Laboratory" },
     { date: "2025-10", text: "Joined the Soft Condensed Matter & Biophysics lab at TTU — lipid membranes as memory devices" },
     { date: "2025-09", text: "Joined the DOD-funded Advanced Semiconductor & Power Systems research group" },

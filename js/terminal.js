@@ -291,7 +291,7 @@ const Term = {
           { html: `<span class="h">YOUR STATS</span>` },
           { html: `  level     <span class="acc bold">${Term.esc(lvl.name)}</span>` },
           { html: `  xp        <span class="bar">[${bar}]</span> ${s.xp}${next ? " / " + next.xp + " → " + Term.esc(next.name) : " · MAX"}` },
-          { html: `  explored  ${Game.exploredPct()}% of the powerfolio` },
+          { html: `  explored  ${Game.exploredPct()}% of the timeline` },
           { html: `  streak    best resistor streak: ${s.bestStreak}` },
           { html: `<span class="h">ACHIEVEMENTS</span>` },
         ];
@@ -318,7 +318,7 @@ const Term = {
       desc: "",
       hidden: true,
       async run() {
-        await Bear.say("There's no escape from ZackOS. This is your life now. (Okay fine, you can close the tab. But the XP stays with me.)", "sneaky");
+        await Bear.say("You can't exit — you're needed in the future. (Okay fine, you can close the tab. But the XP stays with me.)", "sneaky");
       },
     },
 
@@ -371,7 +371,7 @@ const Term = {
         await Term.printLines([
           { html: `<span class="amber bold">        ʕ •ᴥ• ʔ</span>   <span class="acc bold">guest@zackwoodel</span>` },
           { html: `<span class="dim">   ─────────────────────────────────</span>` },
-          { html: `   <span class="acc2">OS</span>        ZackOS 1.0 LTS (Powerfolio)` },
+          { html: `   <span class="acc2">OS</span>        Zack to the Future 1.0 LTS (temporal build)` },
           { html: `   <span class="acc2">Host</span>      ${Term.esc(DATA.school)}` },
           { html: `   <span class="acc2">Kernel</span>    EE-student 5.0 · quantum-materials build` },
           { html: `   <span class="acc2">Shell</span>     bear.sh v${Term.esc(DATA.bear.version)}` },
@@ -583,14 +583,15 @@ const Term = {
   ],
 
   bootLines: [
-    { text: "ZackOS BIOS v1.0 — Whitacre Engineering Build", cls: "dim", d: 300 },
+    { text: "ZACK TO THE FUTURE BIOS v1.0 — Whitacre Engineering Build", cls: "dim", d: 300 },
     { text: "Memory check: 640K ought to be enough .......... OK", cls: "dim", d: 250 },
     { text: "Detecting quantum materials .................... FOUND", cls: "dim", d: 250 },
     { text: "Calibrating oscilloscope ....................... OK", cls: "dim", d: 200 },
     { text: "Spinning up wide-bandgap devices ............... OK", cls: "dim", d: 250 },
+    { text: "Charging flux capacitor ........................ 1.21 GW", cls: "amber", d: 300 },
     { text: "Loading bear.sys ............................... ʕ •ᴥ• ʔ OK", cls: "amber", d: 400 },
     { text: "Mounting /research ............................. OK", cls: "dim", d: 200 },
-    { text: "Starting powerfolio service .................... done", cls: "ok", d: 350 },
+    { text: "Accelerating to 88 mph ......................... done", cls: "ok", d: 350 },
     { text: "", d: 150 },
   ],
 
@@ -627,6 +628,7 @@ const Term = {
     // banner + tagline
     this.line(this.esc(this.bannerZack.join("\n")), "banner");
     this.line(this.esc(this.bannerWoodel.join("\n")), "banner");
+    this.line(`<span class="amber bold">· Z A C K   T O   T H E   F U T U R E ·</span>`);
     this.line(`<span class="acc2 bold">${this.esc(DATA.headline)}</span>`);
     this.line(`<span class="dim">${this.esc(DATA.school)} · ${this.esc(DATA.location)}</span>`);
     this.line(`<span class="dim">${"─".repeat(52)}</span>`);

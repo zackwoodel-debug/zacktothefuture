@@ -34,7 +34,7 @@ const Game = {
     "root-denied":  { name: "Root Denied",           desc: "Tried to sudo. Bold move." },
     "electrician":  { name: "Certified Electrician", desc: "5-streak in the resistor challenge" },
     "off-the-map":  { name: "Off the Map",           desc: "Discovered a secret command" },
-    "completionist":{ name: "Completionist",         desc: "Explored 100% of the powerfolio" },
+    "completionist":{ name: "Completionist",         desc: "Explored 100% of the timeline" },
   },
 
   /* ---------------- persistence ---------------- */

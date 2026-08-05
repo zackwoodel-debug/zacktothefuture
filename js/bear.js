@@ -71,11 +71,13 @@ const Bear = {
 
   /* boot-time greeting */
   async greet(returning) {
+    const seenAll = (Game.state.worldsVisited || []).length >= DATA.worldOrder.length;
     if (returning) {
       const lvl = Game.levelFor(Game.state.xp).name;
-      await this.say(`Welcome back! I remembered you — still a ${lvl} with ${Game.state.xp} XP. Type [[help]] to keep exploring, or [[stats]] to see your progress.`, "happy");
+      const nudge = seenAll ? "Type [[help]] to keep exploring, or [[stats]] to see your progress." : "Word is the multiverse opened up — type [[worlds]] and see for yourself.";
+      await this.say(`Welcome back! I remembered you — still a ${lvl} with ${Game.state.xp} XP. ${nudge}`, "happy");
     } else {
-      await this.say(`Howdy — I'm ${DATA.bear.name}, Zack's assistant bear, and I'll be your guide. Type [[help]] (or tap a button below) to start exploring. You'll earn XP for everything you discover.`, "happy");
+      await this.say(`Howdy — I'm ${DATA.bear.name}, Zack's assistant bear, and I'll be your guide. Type [[help]] (or tap a button below) to start exploring. You'll earn XP for everything you discover. And when you're ready: [[worlds]]. Trust me.`, "happy");
     }
   },
 

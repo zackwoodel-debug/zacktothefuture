@@ -23,6 +23,122 @@ const DATA = {
     version: "2.1.0",
   },
 
+  /* -------- The multiverse: three worlds, one Zack. --------
+     Each world = a palette (see css/style.css), a prompt, and a
+     personality facet. Warp with `warp <id>`. */
+  worldOrder: ["zackos", "neon", "nova"],
+
+  worlds: {
+    zackos: {
+      name: "ZACKOS",
+      year: "2026",
+      tagline: "the present — calm phosphor & real research",
+      desc: "The home terminal. Quiet green glow, three research labs, one assistant bear. This is where the actual work happens.",
+      personality: "the researcher — precise, curious, over-caffeinated",
+      prompt: "guest@zackwoodel:~$",
+      titlebar: "guest@zackwoodel — ~/zack-to-the-future",
+      title: "· Z A C K O S ·",
+      sub: "2026 — the present",
+      warpLines: [
+        "Re-entering the present ........ 2026-08",
+        "Flux capacitor ................. cooling down",
+        "Coffee ......................... still warm",
+        "Lab bench ...................... exactly as you left it",
+      ],
+      volt: "And... we're home. The present: where the resumes are real and the coffee is warm. [[help]] if you need your bearings.",
+      voltMood: "happy",
+      already: "Look around — we're already in the present. Pick another timeline: [[worlds]].",
+    },
+    neon: {
+      name: "NEON GRID",
+      year: "1985",
+      tagline: "high-octane neon & chrome — the retro metaverse",
+      desc: "A sprawling, chaotic, low-latency metaverse the way 1985 dreamed it: neon light, chrome edges, synth in the air, and high scores that matter.",
+      personality: "the arcade kid — high-octane, competitive, a little chaotic",
+      prompt: "runner@neon-grid:~$",
+      titlebar: "runner@neon-grid — /timeline/1985",
+      title: "◢ N E O N   G R I D ◣",
+      sub: "1985 — neon-and-chrome retro-future",
+      warpLines: [
+        "Dialing 1985 ................... CARRIER DETECTED",
+        "Neon tubes ..................... 100% RAD",
+        "Chrome layer ................... MIRROR FINISH",
+        "Grid latency ................... 0.88 ms — always low",
+        "INSERT COIN .................... credit accepted",
+      ],
+      volt: "WELCOME TO THE GRID. Watch for light-cycles and respect the high score. [[play]] hits harder here — and [[showcase]] glows.",
+      voltMood: "cool",
+      already: "We're already on the grid, hotshot. Other timelines: [[worlds]].",
+    },
+    nova: {
+      name: "STARFORGE",
+      year: "3026",
+      tagline: "deep-space black & plasma neon — the epic cut",
+      desc: "A thousand years out, someone built a monument to the work. Deep-space black, plasma light, typography with a film score behind it. This is where the cool stuff lives.",
+      personality: "the dreamer — epic scale, long game, mythos energy",
+      prompt: "cmdr@starforge:~$",
+      titlebar: "cmdr@starforge — /timeline/3026",
+      title: "✦ S T A R F O R G E ✦",
+      sub: "3026 — the far future",
+      warpLines: [
+        "Plotting hyperspace lane ....... LOCKED",
+        "Plasma conduits ................ 1.21 GW — tradition",
+        "Star charts .................... epoch 3026 loaded",
+        "Gravity well ................... cleared. punch it.",
+      ],
+      volt: "Welcome to the far future, commander. Out here the research is legend — read the archives: [[showcase]].",
+      voltMood: "excited",
+      already: "Commander, we're already in the far future. Chart a new course: [[worlds]].",
+    },
+  },
+
+  /* -------- Personality profile (the `vibe` command). --------
+     TODO: make this yours — swap in your real mottos, hobbies,
+     and favorite things. This is the human behind the resume. */
+  personality: {
+    title: "PERSONALITY.SYS — the human behind the resume",
+    traits: [
+      ["energy",    "golden-retriever enthusiasm, oscilloscope precision"],
+      ["fueled by", "coffee, curiosity, and exactly 1.21 gigawatts"],
+      ["motto",     "\"Roads? Where we're going, we don't need roads.\""],
+      ["happiest",  "when the growth run works on the first try (it never does)"],
+      ["sidekick",  "Volt ʕ •ᴥ• ʔ — lab bear, chief skeptic, honey QA lead"],
+      ["habitat",   "equal parts cleanroom, arcade, and star chart"],
+      ["irl",       "fixes electronics, builds sites like this one, asks \"but WHY does it superconduct?\""],
+    ],
+    outro: "Three worlds, three sides of the same guy — go see for yourself:",
+  },
+
+  /* -------- The cool stuff (the `showcase` command). --------
+     Epic framing on purpose — it lives best in the STARFORGE world. */
+  showcase: [
+    {
+      title: "The DOD Semiconductor Saga",
+      epic: "Wide-bandgap devices forged for extreme environments — power electronics that refuse to die.",
+      cmd: "research",
+    },
+    {
+      title: "Oak Ridge Chronicles",
+      epic: "Summer 2026: national-laboratory research at ORNL. The big leagues.",
+      cmd: "experience",
+    },
+    {
+      title: "The Zero-Resistance Files",
+      epic: "Superconductors grown and probed for the secrets of quantum phases.",
+      cmd: "research",
+    },
+    {
+      title: "Membranes That Remember",
+      epic: "Lipid bilayers studied as living memory — biology meets neuromorphic computing.",
+      cmd: "research",
+    },
+    {
+      title: "This Very Machine",
+      epic: "A hand-built terminal multiverse. You're standing in the exhibit.",
+      cmd: "worlds",
+    },
+  ],
+
   whoami: [
     "Hey — I'm Zack.",
     "",
@@ -156,6 +272,16 @@ const DATA = {
       intents: ["news", "update", "updates", "latest", "recent", "follow", "keeping up"],
       mood: "excited",
       reply: "Type [[news]] for the latest — that's the feed to watch if you want to keep up with Zack's journey.",
+    },
+    {
+      intents: ["world", "worlds", "warp", "travel", "neon", "grid", "starforge", "space", "1985", "3026", "multiverse", "timeline", "future", "past"],
+      mood: "excited",
+      reply: "Oh, you found the multiverse! Type [[worlds]] to see all three timelines — neon 1985, the present, and deep space 3026 — and warp between them. Each one is a different side of Zack.",
+    },
+    {
+      intents: ["personality", "vibe", "hobbies", "hobby", "interests", "fun fact", "himself", "person"],
+      mood: "happy",
+      reply: "Want the human behind the resume? Type [[vibe]] — mottos, energy readings, the works. And his coolest stuff is in [[showcase]].",
     },
     {
       intents: ["secret", "secrets", "easter", "egg", "hidden", "cheat"],

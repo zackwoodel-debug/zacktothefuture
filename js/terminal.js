@@ -1,8 +1,76 @@
 /* ============================================================
    terminal.js — the ZackOS shell.
    Boot sequence, command engine, history, autocomplete,
-   chips, easter eggs. Content comes from data.js.
+   chips, easter eggs, world-warping. Content comes from data.js.
    ============================================================ */
+
+/* ---------------- the multiverse engine ----------------
+   Applies a world's palette (body[data-world] → css),
+   prompt, and titlebar; persists the choice across visits. */
+const Worlds = {
+  KEY: "zackos-world",
+  current: "zackos",
+
+  destinations: {
+    zackos: ["zackos", "os", "present", "home", "2026", "now"],
+    neon:   ["neon", "grid", "neon-grid", "1985", "past", "arcade", "cyberpunk"],
+    nova:   ["nova", "starforge", "space", "3026", "future", "stars"],
+  },
+
+  resolve(arg) {
+    const a = String(arg || "").trim().toLowerCase();
+    if (!a) return null;
+    for (const [id, names] of Object.entries(this.destinations)) {
+      if (names.includes(a)) return id;
+    }
+    return null;
+  },
+
+  apply(id) {
+    this.current = id;
+    const w = DATA.worlds[id];
+    document.body.dataset.world = id;
+    Term.PROMPT = w.prompt;
+    if (Term.promptLabel && Term.mode === "shell") Term.promptLabel.textContent = w.prompt;
+    const titleEl = document.querySelector(".titlebar .title");
+    if (titleEl) titleEl.textContent = w.titlebar;
+    try { localStorage.setItem(this.KEY, id); } catch (e) {}
+  },
+
+  load() {
+    let id = "zackos";
+    try {
+      const saved = localStorage.getItem(this.KEY);
+      if (saved && DATA.worlds[saved]) id = saved;
+    } catch (e) {}
+    this.apply(id);
+    Game.onWorldVisit(id);
+  },
+
+  async warp(id) {
+    const w = DATA.worlds[id];
+    if (id === this.current) {
+      await Bear.say(w.already, "grumpy");
+      return;
+    }
+    if (!Term.reducedMotion) {
+      document.body.classList.add("warping");
+      setTimeout(() => document.body.classList.remove("warping"), 700);
+      await Term.sleep(220); // switch palettes mid-flash
+    }
+    this.apply(id);
+    Game.onWorldVisit(id);
+    Term.out.innerHTML = "";
+    await Term.printLines([
+      { html: `<div class="world-title">${Term.esc(w.title)}</div>` },
+      { html: `<span class="dim">${Term.esc(w.sub)}</span>` },
+      { html: `` },
+      ...w.warpLines.map(t => ({ html: Term.esc(t), cls: "dim" })),
+      { html: `` },
+    ], 90);
+    await Bear.say(w.volt, w.voltMood);
+  },
+};
 
 const Term = {
   out: null,
@@ -122,6 +190,13 @@ const Term = {
           { html: `  ${c("resume")}       <span class="dim">view resume</span>` },
           { html: `  ${c("linkedin")}     <span class="dim">open LinkedIn profile</span>` },
           { html: `  ${c("github")}       <span class="dim">open GitHub</span>` },
+          { html: `  ${c("vibe")}         <span class="dim">the human behind the resume</span>` },
+          { html: `  ${c("showcase")}     <span class="dim">the cool stuff, hall-of-records edition</span>` },
+          { html: `<span class="h">MULTIVERSE</span>` },
+          { html: `  ${c("worlds")}       <span class="dim">the three timelines of Zack</span>` },
+          { html: `  ${c("warp neon")}    <span class="dim">1985 — neon-and-chrome cyberpunk grid</span>` },
+          { html: `  ${c("warp nova")}    <span class="dim">3026 — deep-space opera</span>` },
+          { html: `  ${c("warp zackos")}  <span class="dim">2026 — back to the present</span>` },
           { html: `<span class="h">INTERACTIVE</span>` },
           { html: `  ${c("bear")}         <span class="dim">chat with ${Term.esc(DATA.bear.name)}, the AI assistant bear</span>` },
           { html: `  ${c("play")}         <span class="dim">resistor color-code challenge (earn XP)</span>` },
@@ -291,7 +366,8 @@ const Term = {
           { html: `<span class="h">YOUR STATS</span>` },
           { html: `  level     <span class="acc bold">${Term.esc(lvl.name)}</span>` },
           { html: `  xp        <span class="bar">[${bar}]</span> ${s.xp}${next ? " / " + next.xp + " → " + Term.esc(next.name) : " · MAX"}` },
-          { html: `  explored  ${Game.exploredPct()}% of the timeline` },
+          { html: `  explored  ${Game.exploredPct()}% of the multiverse` },
+          { html: `  worlds    ${Game.state.worldsVisited.length} / ${DATA.worldOrder.length} visited` },
           { html: `  streak    best resistor streak: ${s.bestStreak}` },
           { html: `<span class="h">ACHIEVEMENTS</span>` },
         ];
@@ -304,6 +380,83 @@ const Term = {
           });
         }
         await Term.printLines(lines, 20);
+      },
+    },
+
+    worlds: {
+      desc: "the three timelines",
+      async run() {
+        const lines = [
+          { html: `<span class="h">THE MULTIVERSE — three timelines, one Zack</span>` },
+        ];
+        for (const id of DATA.worldOrder) {
+          const w = DATA.worlds[id];
+          const here = id === Worlds.current;
+          lines.push({
+            html:
+              `<div class="card">` +
+              `<div class="card-title">${here ? "◉" : "○"} ${Term.esc(w.name)} · ${Term.esc(w.year)}${here ? ' <span class="ok">— you are here</span>' : ""}</div>` +
+              `<div class="card-sub">${Term.esc(w.tagline)}</div>` +
+              `<div class="card-desc">${Term.esc(w.desc)}</div>` +
+              `<div class="card-desc">personality: ${Term.esc(w.personality)}</div>` +
+              (here ? "" : `<div>→ ${Term.cmdLink("warp " + id)}</div>`) +
+              `</div>`,
+          });
+        }
+        lines.push({ html: `<span class="dim">your XP and achievements travel with you · visit all three for a surprise</span>` });
+        await Term.printLines(lines, 40);
+      },
+    },
+
+    warp: {
+      desc: "travel between worlds",
+      async run(args) {
+        const id = Worlds.resolve(args);
+        if (!id) {
+          await Term.printLines([
+            { html: `<span class="dim">usage: warp &lt;world&gt; — destinations: ${Term.cmdLink("warp neon")} · ${Term.cmdLink("warp nova")} · ${Term.cmdLink("warp zackos")} · details: ${Term.cmdLink("worlds")}</span>` },
+          ]);
+          return;
+        }
+        await Worlds.warp(id);
+      },
+    },
+
+    vibe: {
+      desc: "personality profile",
+      async run() {
+        const P = DATA.personality;
+        const lines = [{ html: `<span class="h">${Term.esc(P.title)}</span>` }];
+        for (const [k, v] of P.traits) {
+          lines.push({ html: `  <span class="acc2 bold">${Term.esc(k.padEnd(10))}</span> ${Term.esc(v)}` });
+        }
+        lines.push({ html: `` });
+        lines.push({ html: `<span class="dim">${Term.esc(P.outro)} ${Term.cmdLink("worlds")}</span>` });
+        await Term.printLines(lines, 40);
+      },
+    },
+
+    showcase: {
+      desc: "the cool stuff",
+      async run() {
+        const lines = [
+          { html: `<span class="h">SHOWCASE — HALL OF RECORDS</span>` },
+          { html: `<span class="dim">The greatest hits, as the far future will remember them.</span>` },
+        ];
+        for (const s of DATA.showcase) {
+          lines.push({
+            html:
+              `<div class="card">` +
+              `<div class="card-title">✦ ${Term.esc(s.title)}</div>` +
+              `<div class="card-desc">${Term.esc(s.epic)}</div>` +
+              `<div>→ ${Term.cmdLink(s.cmd)}</div>` +
+              `</div>`,
+          });
+        }
+        await Term.printLines(lines, 40);
+        if (Worlds.current !== "nova") {
+          await Bear.say("Between us: this page hits different under the stars. [[warp nova]].", "sneaky");
+        }
       },
     },
 
@@ -371,7 +524,7 @@ const Term = {
         await Term.printLines([
           { html: `<span class="amber bold">        ʕ •ᴥ• ʔ</span>   <span class="acc bold">guest@zackwoodel</span>` },
           { html: `<span class="dim">   ─────────────────────────────────</span>` },
-          { html: `   <span class="acc2">OS</span>        Zack to the Future 1.0 LTS (temporal build)` },
+          { html: `   <span class="acc2">OS</span>        Zack to the Future 1.0 LTS (${Term.esc(DATA.worlds[Worlds.current].name)} build)` },
           { html: `   <span class="acc2">Host</span>      ${Term.esc(DATA.school)}` },
           { html: `   <span class="acc2">Kernel</span>    EE-student 5.0 · quantum-materials build` },
           { html: `   <span class="acc2">Shell</span>     bear.sh v${Term.esc(DATA.bear.version)}` },
@@ -401,6 +554,10 @@ const Term = {
     cv: "resume",
     volt: "bear", chat: "bear",
     game: "play",
+    travel: "warp", jump: "warp", world: "warp",
+    multiverse: "worlds", timelines: "worlds",
+    personality: "vibe",
+    cool: "showcase", stuff: "showcase", trophies: "showcase",
     achievements: "stats", xp: "stats", level: "stats",
     cls: "clear",
     ls: "help", "?": "help",
@@ -628,10 +785,14 @@ const Term = {
     // banner + tagline
     this.line(this.esc(this.bannerZack.join("\n")), "banner");
     this.line(this.esc(this.bannerWoodel.join("\n")), "banner");
-    this.line(`<span class="amber bold">· Z A C K   T O   T H E   F U T U R E ·</span>`);
+    this.line(`<span class="tagline">· Z A C K   T O   T H E   F U T U R E ·</span>`);
     this.line(`<span class="acc2 bold">${this.esc(DATA.headline)}</span>`);
     this.line(`<span class="dim">${this.esc(DATA.school)} · ${this.esc(DATA.location)}</span>`);
     this.line(`<span class="dim">${"─".repeat(52)}</span>`);
+    if (Worlds.current !== "zackos") {
+      const w = DATA.worlds[Worlds.current];
+      this.line(`<span class="dim">timeline restored: ${this.esc(w.name)} · ${this.esc(w.year)} — type ${this.cmdLink("worlds")} to travel</span>`);
+    }
 
     // input is usable immediately — Volt talks while you type
     this.inputRow.classList.remove("hidden");
@@ -651,8 +812,8 @@ const Term = {
   buildChips() {
     const box = document.getElementById("chips");
     const chips = [
-      ["help", ""], ["whoami", ""], ["research", ""], ["experience", ""],
-      ["news", ""], ["bear", "", "chip-bear"], ["play", ""], ["stats", ""], ["contact", ""],
+      ["help", ""], ["whoami", ""], ["worlds", ""], ["research", ""], ["experience", ""],
+      ["vibe", ""], ["news", ""], ["bear", "", "chip-bear"], ["play", ""], ["stats", ""], ["contact", ""],
     ];
     for (const [name, icon, cls] of chips) {
       const b = document.createElement("button");
@@ -680,6 +841,7 @@ const Term = {
     this.screen = document.getElementById("screen");
 
     Game.load();
+    Worlds.load();
     this.buildChips();
 
     // any keypress fast-forwards whatever is currently animating

@@ -1,6 +1,10 @@
 /* ============================================================
-   ZackOS — terminal powerfolio theme
-   Professional pass: restrained glow, smooth motion, no neon.
+   Zack to the Future — multiverse theme system.
+   One layout, three worlds. body[data-world] swaps the palette,
+   background scene, and display typography:
+     (default)  ZACKOS · 2026 — calm phosphor terminal
+     "neon"     NEON GRID · 1985 — neon-and-chrome retro-future
+     "nova"     STARFORGE · 3026 — cinematic space opera
    ============================================================ */
 
 :root {
@@ -10,15 +14,106 @@
   --panel-soft: #101825;
   --text: #cfd9e3;
   --dim: #64748b;
-  --acc: #3fd9a4;        /* calm phosphor green */
-  --acc2: #58b7f0;       /* muted electric blue */
-  --amber: #e2b04a;
+  --muted: #9fb6c9;
+  --acc: #3fd9a4;        --acc-rgb: 63, 217, 164;   /* calm phosphor green */
+  --acc2: #58b7f0;       --acc2-rgb: 88, 183, 240;  /* muted electric blue */
+  --amber: #e2b04a;      --amber-rgb: 226, 176, 74;
   --red: #ff5f56;
   --yellow: #ffbd2e;
   --green: #27c93f;
-  --glow: 0 0 6px rgba(63, 217, 164, 0.25);
+  --link-hover: #8ccdf7;
+  --bear-hover: #f0c66d;
+  --scroll: #223146;
+  --scroll-hover: #2c3f5a;
+  --titlebar-a: #121a26;
+  --titlebar-b: #0e1520;
+  --chips-bg: rgba(12, 18, 27, 0.92);
+  --chip-border: #263445;
+  --toast-bg: #0d141d;
+  --glow: 0 0 6px rgba(var(--acc-rgb), 0.25);
   --mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  --display: var(--mono);
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --scene:
+    radial-gradient(1100px 650px at 72% -12%, rgba(88, 183, 240, 0.05), transparent 60%),
+    radial-gradient(850px 550px at 8% 112%, rgba(63, 217, 164, 0.04), transparent 60%),
+    #06080c;
+}
+
+/* ---- NEON GRID · 1985 — high-octane neon-and-chrome ---- */
+body[data-world="neon"] {
+  --bg: #0b0217;
+  --panel: #140b26;
+  --panel-edge: #33205c;
+  --panel-soft: #1a0f30;
+  --text: #eae2fa;
+  --dim: #8a7fb0;
+  --muted: #c3b2ea;
+  --acc: #ff2d95;  --acc-rgb: 255, 45, 149;   /* hot magenta */
+  --acc2: #00e5ff; --acc2-rgb: 0, 229, 255;   /* electric cyan */
+  --amber: #f9c80e; --amber-rgb: 249, 200, 14; /* chrome gold */
+  --link-hover: #7df3ff;
+  --bear-hover: #ffe066;
+  --scroll: #33205c;
+  --scroll-hover: #452b7a;
+  --titlebar-a: #1c0f38;
+  --titlebar-b: #140b26;
+  --chips-bg: rgba(18, 8, 34, 0.92);
+  --chip-border: #3a2568;
+  --toast-bg: #170c2c;
+  --glow: 0 0 9px rgba(255, 45, 149, 0.45);
+  --display: "Audiowide", var(--mono);
+  --scene:
+    repeating-linear-gradient(0deg, rgba(0, 229, 255, 0.035) 0 1px, transparent 1px 46px),
+    repeating-linear-gradient(90deg, rgba(0, 229, 255, 0.035) 0 1px, transparent 1px 46px),
+    radial-gradient(950px 560px at 82% -12%, rgba(255, 45, 149, 0.14), transparent 60%),
+    radial-gradient(800px 540px at 6% 112%, rgba(0, 229, 255, 0.11), transparent 60%),
+    #0b0217;
+}
+
+/* ---- STARFORGE · 3026 — deep-space black & plasma neon ---- */
+body[data-world="nova"] {
+  --bg: #020207;
+  --panel: #05070f;
+  --panel-edge: #1b2340;
+  --panel-soft: #0a0e1c;
+  --text: #dde6f7;
+  --dim: #66718f;
+  --muted: #a8b6d8;
+  --acc: #ffce4d;  --acc-rgb: 255, 206, 77;   /* saber gold */
+  --acc2: #5fb2ff; --acc2-rgb: 95, 178, 255;  /* plasma blue */
+  --amber: #ffb45e; --amber-rgb: 255, 180, 94;
+  --link-hover: #9ccfff;
+  --bear-hover: #ffd095;
+  --scroll: #1b2340;
+  --scroll-hover: #263259;
+  --titlebar-a: #0a0f20;
+  --titlebar-b: #05070f;
+  --chips-bg: rgba(4, 6, 14, 0.92);
+  --chip-border: #222c4e;
+  --toast-bg: #070b17;
+  --glow: 0 0 10px rgba(255, 206, 77, 0.35);
+  --display: "Orbitron", var(--mono);
+  --scene:
+    radial-gradient(1200px 700px at 70% -20%, rgba(95, 178, 255, 0.10), transparent 60%),
+    radial-gradient(900px 600px at 10% 115%, rgba(255, 206, 77, 0.05), transparent 60%),
+    #020207;
+}
+
+/* starfield behind the terminal, above the void */
+body[data-world="nova"]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1px 1px at 22px 34px, rgba(255, 255, 255, 0.6), transparent 55%),
+    radial-gradient(1px 1px at 118px 92px, rgba(191, 216, 255, 0.45), transparent 55%),
+    radial-gradient(1.4px 1.4px at 200px 150px, rgba(255, 255, 255, 0.5), transparent 55%),
+    radial-gradient(1px 1px at 66px 190px, rgba(255, 224, 163, 0.4), transparent 55%),
+    radial-gradient(1.2px 1.2px at 160px 40px, rgba(214, 231, 255, 0.35), transparent 55%);
+  background-size: 246px 226px;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -26,10 +121,7 @@
 html, body { height: 100%; }
 
 body {
-  background:
-    radial-gradient(1100px 650px at 72% -12%, rgba(88, 183, 240, 0.05), transparent 60%),
-    radial-gradient(850px 550px at 8% 112%, rgba(63, 217, 164, 0.04), transparent 60%),
-    var(--bg);
+  background: var(--scene);
   color: var(--text);
   font-family: var(--mono);
   font-size: 14px;
@@ -41,7 +133,7 @@ body {
   overflow: hidden;
 }
 
-::selection { background: rgba(63, 217, 164, 0.22); color: #eaf5f0; }
+::selection { background: rgba(var(--acc-rgb), 0.22); color: #eaf5f0; }
 
 /* faint scanlines + vignette */
 .crt {
@@ -70,18 +162,27 @@ body {
   flex-direction: column;
   overflow: hidden;
   animation: window-in 0.5s var(--ease);
+  transition: background-color 0.5s var(--ease), border-color 0.5s var(--ease);
 }
 
 @keyframes window-in {
   from { opacity: 0; transform: translateY(10px) scale(0.995); }
 }
 
+/* warp flash when jumping between worlds */
+@keyframes warp-flash {
+  0%   { filter: none; }
+  35%  { filter: brightness(1.7) saturate(1.8) blur(2px); transform: scale(1.012); }
+  100% { filter: none; }
+}
+body.warping .terminal { animation: warp-flash 0.65s var(--ease); }
+
 .titlebar {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 11px 14px;
-  background: linear-gradient(#121a26, #0e1520);
+  background: linear-gradient(var(--titlebar-a), var(--titlebar-b));
   border-bottom: 1px solid var(--panel-edge);
   flex-shrink: 0;
   user-select: none;
@@ -105,14 +206,14 @@ body {
   margin-left: auto;
   font-size: 11px;
   color: var(--acc);
-  background: rgba(63, 217, 164, 0.06);
-  border: 1px solid rgba(63, 217, 164, 0.25);
+  background: rgba(var(--acc-rgb), 0.06);
+  border: 1px solid rgba(var(--acc-rgb), 0.25);
   border-radius: 4px;
   padding: 2px 10px;
   white-space: nowrap;
   transition: transform 0.35s var(--ease), background 0.35s var(--ease);
 }
-.xp-badge.bump { transform: scale(1.08); background: rgba(63, 217, 164, 0.14); }
+.xp-badge.bump { transform: scale(1.08); background: rgba(var(--acc-rgb), 0.14); }
 
 /* ---------------- screen / output ---------------- */
 
@@ -122,12 +223,12 @@ body {
   overflow-x: hidden;
   padding: 18px 20px 22px;
   scrollbar-width: thin;
-  scrollbar-color: #223146 transparent;
+  scrollbar-color: var(--scroll) transparent;
   overscroll-behavior: contain;
 }
 .screen::-webkit-scrollbar { width: 8px; }
-.screen::-webkit-scrollbar-thumb { background: #223146; border-radius: 4px; }
-.screen::-webkit-scrollbar-thumb:hover { background: #2c3f5a; }
+.screen::-webkit-scrollbar-thumb { background: var(--scroll); border-radius: 4px; }
+.screen::-webkit-scrollbar-thumb:hover { background: var(--scroll-hover); }
 
 .line {
   white-space: pre-wrap;
@@ -142,10 +243,10 @@ body {
 .line a {
   color: var(--acc2);
   text-decoration: none;
-  border-bottom: 1px solid rgba(88, 183, 240, 0.35);
+  border-bottom: 1px solid rgba(var(--acc2-rgb), 0.35);
   transition: border-color 0.15s var(--ease), color 0.15s var(--ease);
 }
-.line a:hover { color: #8ccdf7; border-bottom-color: rgba(140, 205, 247, 0.7); }
+.line a:hover { color: var(--link-hover); border-bottom-color: rgba(var(--acc2-rgb), 0.7); }
 
 .dim   { color: var(--dim); }
 .acc   { color: var(--acc); }
@@ -157,6 +258,7 @@ body {
 
 .h {
   color: var(--acc);
+  font-family: var(--display);
   font-weight: 700;
   letter-spacing: 0.1em;
   font-size: 12px;
@@ -172,6 +274,32 @@ body {
   line-height: 1.15;
   overflow-x: auto;
 }
+body[data-world="neon"] .banner {
+  color: var(--acc2);
+  text-shadow: 0 0 8px rgba(var(--acc2-rgb), 0.45);
+}
+
+/* brand tagline under the banner */
+.tagline { color: var(--amber); font-weight: 700; letter-spacing: 0.08em; }
+
+/* big world name shown after a warp */
+.world-title {
+  font-family: var(--display);
+  font-size: 19px;
+  letter-spacing: 0.32em;
+  color: var(--acc);
+  text-shadow: var(--glow);
+  margin-top: 6px;
+}
+body[data-world="neon"] .world-title {
+  background: linear-gradient(180deg, #ffffff 0%, #9ff6ff 38%, #ff2d95 62%, #7a1050 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+}
+body[data-world="nova"] .world-title { letter-spacing: 0.4em; }
 
 /* echoed command line — breathing room between command blocks */
 .echo { margin-top: 12px; }
@@ -183,18 +311,18 @@ body {
   color: var(--acc2);
   cursor: pointer;
   font-weight: 700;
-  border-bottom: 1px solid rgba(88, 183, 240, 0.35);
+  border-bottom: 1px solid rgba(var(--acc2-rgb), 0.35);
   transition: color 0.15s var(--ease), border-color 0.15s var(--ease);
 }
-.cmd:hover { color: #8ccdf7; border-bottom-color: rgba(140, 205, 247, 0.7); }
+.cmd:hover { color: var(--link-hover); border-bottom-color: rgba(var(--acc2-rgb), 0.7); }
 
 /* tech tag pills */
 .tag {
   display: inline-block;
   font-size: 11px;
-  color: #9fb6c9;
-  background: rgba(88, 183, 240, 0.06);
-  border: 1px solid rgba(88, 183, 240, 0.22);
+  color: var(--muted);
+  background: rgba(var(--acc2-rgb), 0.06);
+  border: 1px solid rgba(var(--acc2-rgb), 0.22);
   border-radius: 4px;
   padding: 0 8px;
   margin: 3px 5px 3px 0;
@@ -203,16 +331,16 @@ body {
 
 /* research / experience cards */
 .card {
-  border-left: 2px solid rgba(63, 217, 164, 0.4);
-  background: linear-gradient(90deg, rgba(63, 217, 164, 0.03), transparent 55%);
+  border-left: 2px solid rgba(var(--acc-rgb), 0.4);
+  background: linear-gradient(90deg, rgba(var(--acc-rgb), 0.03), transparent 55%);
   border-radius: 0 6px 6px 0;
   padding: 8px 12px;
   margin: 10px 0;
   transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
 }
 .card:hover {
-  border-left-color: rgba(63, 217, 164, 0.85);
-  background: linear-gradient(90deg, rgba(63, 217, 164, 0.06), transparent 65%);
+  border-left-color: rgba(var(--acc-rgb), 0.85);
+  background: linear-gradient(90deg, rgba(var(--acc-rgb), 0.06), transparent 65%);
 }
 .card .card-title { color: var(--text); font-weight: 700; }
 .card .card-sub   { color: var(--amber); font-size: 12px; margin: 1px 0 4px; }
@@ -279,18 +407,18 @@ body {
 }
 
 .bear-bubble {
-  border: 1px solid rgba(226, 176, 74, 0.3);
-  border-left: 2px solid rgba(226, 176, 74, 0.55);
+  border: 1px solid rgba(var(--amber-rgb), 0.3);
+  border-left: 2px solid rgba(var(--amber-rgb), 0.55);
   border-radius: 6px;
-  background: rgba(226, 176, 74, 0.04);
+  background: rgba(var(--amber-rgb), 0.04);
   padding: 7px 12px;
   color: var(--text);
   max-width: 62ch;
   white-space: pre-wrap;
   word-break: break-word;
 }
-.bear-bubble .cmd { color: var(--amber); border-bottom-color: rgba(226, 176, 74, 0.45); }
-.bear-bubble .cmd:hover { color: #f0c66d; border-bottom-color: rgba(240, 198, 109, 0.8); }
+.bear-bubble .cmd { color: var(--amber); border-bottom-color: rgba(var(--amber-rgb), 0.45); }
+.bear-bubble .cmd:hover { color: var(--bear-hover); border-bottom-color: rgba(var(--amber-rgb), 0.8); }
 
 /* ---------------- chips ---------------- */
 
@@ -299,7 +427,7 @@ body {
   gap: 6px;
   padding: 10px 14px;
   border-top: 1px solid var(--panel-edge);
-  background: rgba(12, 18, 27, 0.92);
+  background: var(--chips-bg);
   overflow-x: auto;
   flex-shrink: 0;
   scrollbar-width: none;
@@ -309,9 +437,9 @@ body {
 .chip {
   font-family: var(--mono);
   font-size: 12px;
-  color: #9fb6c9;
+  color: var(--muted);
   background: transparent;
-  border: 1px solid #263445;
+  border: 1px solid var(--chip-border);
   border-radius: 6px;
   padding: 5px 12px;
   cursor: pointer;
@@ -321,16 +449,16 @@ body {
 }
 .chip:hover {
   color: var(--acc);
-  border-color: rgba(63, 217, 164, 0.45);
-  background: rgba(63, 217, 164, 0.06);
+  border-color: rgba(var(--acc-rgb), 0.45);
+  background: rgba(var(--acc-rgb), 0.06);
   transform: translateY(-1px);
 }
 .chip:active { transform: translateY(0); }
 .chip:focus-visible { outline: 1px solid var(--acc); outline-offset: 2px; }
 .chip.chip-bear:hover {
   color: var(--amber);
-  border-color: rgba(226, 176, 74, 0.45);
-  background: rgba(226, 176, 74, 0.06);
+  border-color: rgba(var(--amber-rgb), 0.45);
+  background: rgba(var(--amber-rgb), 0.06);
 }
 
 /* ---------------- resistor game ---------------- */
@@ -386,9 +514,9 @@ body {
 .toast {
   font-family: var(--mono);
   font-size: 13px;
-  background: #0d141d;
+  background: var(--toast-bg);
   color: var(--text);
-  border: 1px solid #223146;
+  border: 1px solid var(--scroll);
   border-left: 2px solid var(--acc);
   border-radius: 6px;
   padding: 10px 14px;
@@ -437,12 +565,14 @@ body {
   .titlebar .title { font-size: 11px; }
   .banner { font-size: 4.2px; }
   .bear-bubble { max-width: 100%; }
+  .world-title { font-size: 15px; letter-spacing: 0.22em; }
 }
 
 /* ---------------- reduced motion ---------------- */
 
 @media (prefers-reduced-motion: reduce) {
   .terminal, .line, .bear-line, .toast { animation: none; }
+  body.warping .terminal { animation: none; }
   .blinking-cursor { animation: none; }
   .chip, .chip:hover { transform: none; }
 }

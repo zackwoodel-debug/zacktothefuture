@@ -12,6 +12,7 @@ const Game = {
     achievements: [], // unlocked achievement ids
     bearMsgs: 0,
     bestStreak: 0,
+    worldsVisited: [], // world ids the visitor has traveled to
   },
 
   levels: [
@@ -22,7 +23,7 @@ const Game = {
   ],
 
   // commands that count toward "explored %"
-  coreCommands: ["help", "whoami", "research", "experience", "skills", "news", "contact", "linkedin", "github", "resume", "bear", "play", "stats"],
+  coreCommands: ["help", "whoami", "research", "experience", "skills", "news", "contact", "linkedin", "github", "resume", "bear", "play", "stats", "worlds", "warp", "vibe", "showcase"],
 
   achievementDefs: {
     "first-cmd":    { name: "Hello, World",          desc: "Ran your first command" },
@@ -34,7 +35,8 @@ const Game = {
     "root-denied":  { name: "Root Denied",           desc: "Tried to sudo. Bold move." },
     "electrician":  { name: "Certified Electrician", desc: "5-streak in the resistor challenge" },
     "off-the-map":  { name: "Off the Map",           desc: "Discovered a secret command" },
-    "completionist":{ name: "Completionist",         desc: "Explored 100% of the timeline" },
+    "multiverse":   { name: "Multiverse Traveler",   desc: "Visited all three worlds" },
+    "completionist":{ name: "Completionist",         desc: "Explored 100% of the multiverse" },
   },
 
   /* ---------------- persistence ---------------- */
@@ -144,6 +146,17 @@ const Game = {
     this.state.bearMsgs++;
     this.save();
     if (this.state.bearMsgs >= 3) this.unlock("bear-whisperer");
+  },
+
+  /* called whenever the visitor lands in a world (incl. page load) */
+  onWorldVisit(id) {
+    if (!this.state.worldsVisited.includes(id)) {
+      this.state.worldsVisited.push(id);
+      this.save();
+    }
+    if (DATA.worldOrder.every(w => this.state.worldsVisited.includes(w))) {
+      this.unlock("multiverse");
+    }
   },
 
   /* ---------------- resistor color-code game ---------------- */
